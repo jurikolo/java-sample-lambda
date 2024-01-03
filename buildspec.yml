@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto17
+  build:
+    commands:
+      - echo Build started on `date`
+      - mvn package
+      - echo Build completed on `date`
+  post_build:
+    commands:
+      - aws cloudformation package --template-file cloudformation.yml --s3-bucket jurikolo-codepipeline-bucket --output-template-file packaged-template.yaml
+artifacts:
+  files:
+    - packaged-template.yaml
+    - target/java-sample-1.0-SNAPSHOT.jar
