@@ -15,7 +15,7 @@ phases:
       - set
       - echo Build started on `date`
       - mvn package --no-transfer-progress
-      - mvn sonar:sonar -Dsonar.token=$SONAR_TOKEN -Dsonar.host.url=$SONAR_URL -Dsonar.projectKey=$GITHUB_ORG -Dsonar.organization=$GITHUB_ORG -Dsonar.links.scm=https://github.com/$GITHUB_ORG/$GITHUB_REPO -Dsonar.qualitygate.wait=true --no-transfer-progress
+      - mvn sonar:sonar -Dsonar.token=$SONAR_TOKEN -Dsonar.host.url=$SONAR_URL -Dsonar.projectKey=$GITHUB_ORG -Dsonar.organization=$GITHUB_ORG -Dsonar.links.scm=https://github.com/$GITHUB_ORG/$GITHUB_REPO --no-transfer-progress
       - sleep 5
       - curl -s https://sonarcloud.io/api/qualitygates/project_status?projectKey=${GITHUB_ORG}_${GITHUB_REPO} >result.json
       - cat result.json
