@@ -6,13 +6,15 @@ phases:
       java: corretto17
   pre_build:
     commands:
-      - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-      - unzip sonar-scanner-cli-5.0.1.3006-linux.zip
+      - wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+      - unzip -qq sonar-scanner-cli-5.0.1.3006-linux.zip
       - PATH=$PATH:/sonar-scanner-5.0.1.3006-linux/bin/
   build:
     commands:
+      - env
+      - set
       - echo Build started on `date`
-      - mvn package
+      - mvn package --no-transfer-progress
       - mvn sonar:sonar -Dsonar.login=$SONAR_TOKEN -Dsonar.host.url=$SONAR_URL -Dsonar.projectKey=$GITHUB_ORG -Dsonar.organization=$GITHUB_ORG
       - sleep 5
       - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$GITHUB_REPO >result.json
