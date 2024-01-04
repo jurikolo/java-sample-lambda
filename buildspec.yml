@@ -17,7 +17,7 @@ phases:
       - mvn package --no-transfer-progress
       - mvn sonar:sonar -Dsonar.token=$SONAR_TOKEN -Dsonar.host.url=$SONAR_URL -Dsonar.projectKey=$GITHUB_ORG -Dsonar.organization=$GITHUB_ORG --no-transfer-progress
       - sleep 5
-      - curl https://sonarcloud.io/api/qualitygates/project_status?projectKey=$GITHUB_ORG_$GITHUB_REPO >result.json
+      - curl -s https://sonarcloud.io/api/qualitygates/project_status?projectKey=${GITHUB_ORG}_${GITHUB_REPO} >result.json
       - cat result.json
       - if [ $(jq -r '.projectStatus.status' result.json) = ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
       - echo Build completed on `date`
