@@ -32,3 +32,4 @@ artifacts:
   files:
     - packaged-template.yaml
     - target/java-sample-1.0-SNAPSHOT.jar
+
