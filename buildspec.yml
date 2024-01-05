@@ -6,23 +6,29 @@ phases:
       java: corretto17
   pre_build:
     commands:
-      - wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_VERSION}-linux.zip
-      - unzip -qq sonar-scanner-cli-${SONAR_VERSION}-linux.zip
-      - PATH=$PATH:/sonar-scanner-${SONAR_VERSION}-linux/bin/
+      - |
+        if [ "$SONAR_ENABLED" = "true" ]; then
+          wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_VERSION}-linux.zip
+          unzip -qq sonar-scanner-cli-${SONAR_VERSION}-linux.zip
+          PATH=$PATH:/sonar-scanner-${SONAR_VERSION}-linux/bin/
+        fi
   build:
     commands:
       - echo Build started on `date`
       - mvn package --no-transfer-progress
-      - mvn sonar:sonar -Dsonar.token=$SONAR_TOKEN -Dsonar.host.url=$SONAR_URL -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.organization=$GITHUB_ORG --no-transfer-progress
-      - sleep 10
-      - curl -s $SONAR_REPORT_URL > result.json
-      - cat result.json
-      - if [ $(jq -r '.projectStatus.status' result.json) = ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
+      - |
+        if [ "$SONAR_ENABLED" = "true" ]; then
+          mvn sonar:sonar -Dsonar.token=$SONAR_TOKEN -Dsonar.host.url=$SONAR_URL -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.organization=$SONAR_ORG --no-transfer-progress
+          sleep 10
+          curl -s $SONAR_REPORT_URL > result.json
+          cat result.json
+          if [ $(jq -r '.projectStatus.status' result.json) = ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
+        fi
       - echo Build completed on `date`
   post_build:
     commands:
-      - aws cloudformation package --template-file cloudformation.yml --s3-bucket jurikolo-codepipeline-bucket --output-template-file packaged-template.yaml
+      - aws cloudformation package --template-file cloudformation.yml --s3-bucket $S3_BUCKET --output-template-file $PACKAGED_TEMPLATE
 artifacts:
   files:
-    - packaged-template.yaml
+    - $PACKAGED_TEMPLATE
     - target/java-sample-1.0-SNAPSHOT.jar
