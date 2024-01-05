@@ -18,7 +18,7 @@ phases:
       - mvn package --no-transfer-progress
       - |
         if [ "$SONAR_ENABLED" = "true" ]; then
-          mvn sonar:sonar -Dsonar.token=$SONAR_TOKEN -Dsonar.host.url=$SONAR_URL -Dsonar.projectKey=jurikolo_github-java-sample -Dsonar.organization=$SONAR_ORG --no-transfer-progress
+          mvn sonar:sonar -Dsonar.token=$SONAR_TOKEN -Dsonar.host.url=$SONAR_URL -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.organization=$SONAR_ORG --no-transfer-progress
           sleep 10
           curl -s $SONAR_REPORT_URL > result.json
           cat result.json
@@ -27,9 +27,8 @@ phases:
       - echo Build completed on `date`
   post_build:
     commands:
-      - aws cloudformation package --template-file cloudformation.yml --s3-bucket jurikolo-codepipeline-bucket --output-template-file packaged-template.yaml
+      - aws cloudformation package --template-file cloudformation.yml --s3-bucket $S3_BUCKET --output-template-file packaged-template.yaml
 artifacts:
   files:
     - packaged-template.yaml
     - target/java-sample-1.0-SNAPSHOT.jar
-
