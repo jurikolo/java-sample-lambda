@@ -13,3 +13,8 @@ Send following JSON to a Lambda to verify it works as expected:
   "message": "Hello World!"
 }
 ```
+
+# SonarQube scanner
+
+This project uses SonarQube CLI to scan the project for security vulnerabilities.\
+Documentation and versions available: [link](https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/scanners/sonarscanner/)
