@@ -13,7 +13,7 @@ phases:
     commands:
       - echo Build started on `date`
       - mvn package --no-transfer-progress
-      - ls -la
+      - git branch
       - mvn sonar:sonar -Dsonar.token=$SONAR_TOKEN -Dsonar.host.url=$SONAR_URL -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.organization=$GITHUB_ORG --no-transfer-progress
       - sleep 5
       - curl -s $SONAR_REPORT_URL > result.json
