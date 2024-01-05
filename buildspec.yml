@@ -14,7 +14,7 @@ phases:
       - echo Build started on `date`
       - mvn package --no-transfer-progress
       - ls -la
-      - mvn sonar:sonar -Dsonar.token=$SONAR_TOKEN -Dsonar.host.url=$SONAR_URL -Dsonar.projectKey=$GITHUB_ORG -Dsonar.organization=$GITHUB_ORG --no-transfer-progress
+      - mvn sonar:sonar -Dsonar.token=$SONAR_TOKEN -Dsonar.host.url=$SONAR_URL -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.organization=$GITHUB_ORG --no-transfer-progress
       - sleep 5
       - curl -s $SONAR_REPORT_URL > result.json
       - cat result.json
