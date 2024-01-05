@@ -27,8 +27,8 @@ phases:
       - echo Build completed on `date`
   post_build:
     commands:
-      - aws cloudformation package --template-file cloudformation.yml --s3-bucket $S3_BUCKET --output-template-file packaged-template.yaml
+      - aws cloudformation package --template-file cloudformation.yml --s3-bucket $S3_BUCKET --output-template-file $PACKAGED_TEMPLATE
 artifacts:
   files:
-    - packaged-template.yaml
+    - $PACKAGED_TEMPLATE
     - target/java-sample-1.0-SNAPSHOT.jar
