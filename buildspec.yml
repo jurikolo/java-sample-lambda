@@ -6,16 +6,15 @@ phases:
       java: corretto17
   pre_build:
     commands:
-      - wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-      - unzip -qq sonar-scanner-cli-5.0.1.3006-linux.zip
-      - PATH=$PATH:/sonar-scanner-5.0.1.3006-linux/bin/
+      - wget -q https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_VERSION}-linux.zip
+      - unzip -qq sonar-scanner-cli-${SONAR_VERSION}-linux.zip
+      - PATH=$PATH:/sonar-scanner-${SONAR_VERSION}-linux/bin/
   build:
     commands:
       - echo Build started on `date`
       - mvn package --no-transfer-progress
-      - git branch
       - mvn sonar:sonar -Dsonar.token=$SONAR_TOKEN -Dsonar.host.url=$SONAR_URL -Dsonar.projectKey=$SONAR_PROJECT_KEY -Dsonar.organization=$GITHUB_ORG --no-transfer-progress
-      - sleep 5
+      - sleep 10
       - curl -s $SONAR_REPORT_URL > result.json
       - cat result.json
       - if [ $(jq -r '.projectStatus.status' result.json) = ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
