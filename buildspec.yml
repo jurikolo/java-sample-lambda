@@ -12,6 +12,12 @@ phases:
           unzip -qq sonar-scanner-cli-${SONAR_VERSION}-linux.zip
           PATH=$PATH:/sonar-scanner-${SONAR_VERSION}-linux/bin/
         fi
+      - |
+        if [ "$SNYK_ENABLED" = "true" ]; then
+          SNYK=snyk-linux-arm64
+          wget -q https://static.snyk.io/cli/latest/$SNYK
+          chmod +x $SNYK
+        fi
   build:
     commands:
       - echo Build started on `date`
@@ -22,7 +28,12 @@ phases:
           sleep 10
           curl -s $SONAR_REPORT_URL > result.json
           cat result.json
-          if [ $(jq -r '.projectStatus.status' result.json) = ERROR ] ; then $CODEBUILD_BUILD_SUCCEEDING -eq 0 ;fi
+          if [ $(jq -r '.projectStatus.status' result.json) = ERROR ]; then CODEBUILD_BUILD_SUCCEEDING=0;fi
+        fi
+      - |
+        if [ "$SNYK_ENABLED" = "true" ]; then
+          ./$SNYK code test --org=$SNYK_ORG
+          if [ $? != 0 ]; then CODEBUILD_BUILD_SUCCEEDING=0;fi
         fi
       - echo Build completed on `date`
   post_build:
